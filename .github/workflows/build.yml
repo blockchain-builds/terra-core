@@ -71,7 +71,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: "v${{ steps.terra_core_build.outputs.version }}"
-          release_name: ${{ steps.terra_core_build.outputs.version }}
+          release_name: "v${{ steps.terra_core_build.outputs.version }}"
           body_path: ${{ steps.terra_core_build.outputs.release_body }}
           draft: false
           prerelease: false
