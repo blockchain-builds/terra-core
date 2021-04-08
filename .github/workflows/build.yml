@@ -46,7 +46,7 @@ jobs:
           cd core
           
           # checkout branch/tag/commit
-          git checkout master
+          git checkout ${{ github.event.inputs.terra_core_checkout }}
           
           # build terra core
           make install
