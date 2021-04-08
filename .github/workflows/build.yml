@@ -36,14 +36,51 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: Build Terra Core
+        id: terra_core_build
         run: |
+          # temporary hack
+          GOPATH="/home/runner/go"
+          
+          # checkout terra core
           git clone https://github.com/terra-project/core/
           cd core
+          
+          # checkout branch/tag/commit
           git checkout master
+          
+          # build terra core
           make install
-          /home/runner/go/bin/terracli version --long
           
+          # save version output
+          /home/runner/go/bin/terracli version --long > ${HOME}/version.md
+          
+          # create binaries archive
           VERSION=$(terracli version --long | grep version: | cut -d " " -f2)
-          tar -czvf terra-core-${VERSION}.tar.gz ${GOPATH}/bin/*
+          tar -czvf ${HOME}/terra-core-${VERSION}.tar.gz ${GOPATH}/bin/*
           
-          ls -l 
+          # set outputs
+          echo "::set-output name=version::${VERSION}"
+          echo "::set-output name=release_file::${HOME}/terra-core-${VERSION}.tar.gz"
+          echo "::set-output name=release_file_name::terra-core-${VERSION}.tar.gz"
+          echo "::set-output name=release_body::${HOME}/version.md"
+          
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v${{ steps.terra_core_build.version }}"
+          release_name: ${{ steps.terra_core_build.version }}
+          body_path: ${{ steps.terra_core_build.release_body }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ${{ steps.terra_core_build.release_file }}
+          asset_name: ${{ steps.terra_core_build.release_file_name }}
