@@ -52,10 +52,10 @@ jobs:
           make install
           
           # save version output
-          /home/runner/go/bin/terracli version --long > ${HOME}/version.md
+          ${GOPATH}/bin/terracli version --long > ${HOME}/version.md
           
           # create binaries archive
-          VERSION=$(terracli version --long | grep version: | cut -d " " -f2)
+          VERSION=$(${GOPATH}/bin/terracli version --long | grep version: | cut -d " " -f2)
           tar -czvf ${HOME}/terra-core-${VERSION}.tar.gz ${GOPATH}/bin/*
           
           # set outputs
