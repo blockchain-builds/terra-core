@@ -41,6 +41,9 @@ jobs:
           cd core
           git checkout master
           make install
-          ls -l /home/runner/go/bin
-          /home/runner/go/bin/terrad version --long
           /home/runner/go/bin/terracli version --long
+          
+          VERSION=$(terracli version --long | grep version: | cut -d " " -f2)
+          tar -czvf terra-core-${VERSION}.tar.gz ${GOPATH}/bin/*
+          
+          ls -l 
