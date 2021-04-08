@@ -10,6 +10,11 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      terra_core_checkout:
+        description: 'terra-core checkout (branch,tag, commit)'     
+        required: false
+        default: 'master'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -34,7 +39,7 @@ jobs:
           # token: # optional, default is ${{ github.token }}
 
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Build Terra Core
         run: |
           git clone https://github.com/terra-project/core/
           cd core
