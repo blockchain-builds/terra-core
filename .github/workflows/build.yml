@@ -57,7 +57,7 @@ jobs:
           
           # create binaries archive
           VERSION=$(${GOPATH}/bin/terracli version --long | grep version: | cut -d " " -f2)
-          tar -czvf ${HOME}/terra-core-${VERSION}.tar.gz ${GOPATH}/bin/*
+          (cd ${GOPATH}/bin/ && tar -chzvf ${HOME}/terra-core-${VERSION}.tar.gz *)
           
           # set outputs
           echo "::set-output name=version::${VERSION}"
